@@ -1,87 +1,110 @@
 # check-deps.nvim
 
-A lightweight and barebones Neovim plugin to check for external dependencies and help install them.
+A lightweight Neovim plugin to check for external dependencies and help install them.
 
-https://github.com/user-attachments/assets/ae0c5c4a-09ce-4364-a166-a6bc759e9a70
+![screenshot](https://github.com/nhattVim/assets/blob/master/check-deps.nvim/1.png?raw=true)
 
 ## Features
 
-* Define a list of required programs/tools.
-* Custom check functions per dependency.
-* Warn if dependencies are missing.
-* Floating window display of missing dependencies.
-* Suggested install commands for each dependency.
-* Press `<CR>` on an install command to open a bottom split terminal and run it.
-* Press `q` to quit the floating window.
+- Define a list of required programs/tools.
+- Custom check functions per dependency.
+- Warn if dependencies are missing.
+- Floating window display of missing dependencies.
+- Suggested install commands for each dependency.
 
 ## Installation
 
-Use your favorite plugin manager:
-
-### Lazy.nvim
-
 ```lua
-{
-  "agokule/check-deps.nvim",
-  config = function()
-    require("check-deps").setup({
-      list = {
-        {
-          name = "rg",
-          cmd = "rg",
-          install = {
-            linux = { "sudo apt install ripgrep", "sudo pacman -S ripgrep" },
-            darwin = { "brew install ripgrep" },
-            windows = { "choco install ripgrep", "winget install BurntSushi.ripgrep.GNU" },
-          },
+-- lua with lazy.nvim
+return {
+  "nhattVim/check-deps.nvim",
+  lazy = false,
+  cmd = "DepsCheck",
+  opts = {
+    auto_check = true,
+    list = {
+      {
+        name = "make",
+        cmd = "make",
+        install = {
+          linux = { "sudo apt install build-essential", "sudo pacman -S make" },
+          darwin = { "brew install make" },
+          windows = { "scoop install make", "choco install make" },
         },
-        {
-          name = "node",
-          cmd = "node",
-          check = function()
-            return vim.fn.executable("node") == 1 and vim.fn.system("node -v"):match("v16") ~= nil
-          end,
-          install = {
-            linux = { "sudo apt install nodejs" },
-            darwin = { "brew install node" },
-            windows = { "choco install nodejs" },
+      },
+      {
+        name = "node",
+        cmd = "node",
+        check = function()
+          return vim.fn.executable("node") == 1 and vim.fn.system("node -v"):match("v16") ~= nil
+        end,
+        install = {
+          linux = { "sudo apt install nodejs" },
+          darwin = { "brew install node" },
+          windows = { "choco install nodejs" },
+        },
+      },
+      {
+        name = "rg (ripgrep)",
+        cmd = "rg",
+        install = {
+          linux = { "sudo apt install ripgrep", "sudo pacman -S ripgrep" },
+          darwin = { "brew install ripgrep" },
+          windows = {
+            "scoop install ripgrep",
+            "choco install ripgrep",
+            "winget install BurntSushi.ripgrep.GNU",
           },
         },
       },
-      auto_check = true,
-      open_float = true,
-    })
-  end
+      {
+        name = "lazygit",
+        cmd = "lazygit",
+        install = {
+          linux = {
+            "sudo add-apt-repository ppa:lazygit-team/release && sudo apt install lazygit",
+            "sudo pacman -S lazygit",
+          },
+          darwin = { "brew install lazygit" },
+          windows = {
+            "scoop install lazygit",
+            "choco install lazygit",
+            "winget install JesseDuffield.lazygit",
+          },
+        },
+      },
+    },
+  },
 }
+
 ```
 
 ## Usage
 
-* Run `:DepsCheck` to check dependencies.
-* If missing dependencies are found:
-  * A floating window will open.
-  * Each missing dependency is listed with its install commands.
-  * Move the cursor to an install command and press `<CR>` to open a bottom vsplit terminal and run it.
-  * Press `q` to close the floating window.
+- Run `:DepsCheck` to check dependencies.
+- If missing dependencies are found:
+    - A floating window will open.
+    - Each missing dependency is listed with its install commands.
+    - Move the cursor to an install command and press `<CR>` to run it.
+    - Press `<Tab>` to switch panel, `<Esc>/q` to close the panel.
 
 ## Configuration
 
 Options passed to `setup`:
 
 ```lua
-{
-  list = { ... },  -- table of dependencies
-  auto_check = false, -- run automatically at startup
-  open_float = true,  -- open floating window if missing deps
+opts = {
+  auto_check = true, -- run automatically at startup
+  list = { ... },    -- table of dependencies
 }
 ```
 
 ### Dependency spec fields
 
-* **name**: Display name.
-* **cmd**: The executable name to check (optional if using `check`).
-* **check**: A custom Lua function that takes no parameters and returns `true` if installed.
-* **install**: A table of possible install commands by platform (keys: `linux`, `darwin`, `windows`).
+- **name**: Display name.
+- **cmd**: The executable name to check (optional if using `check`).
+- **check**: A custom Lua function that takes no parameters and returns `true` if installed.
+- **install**: A table of possible install commands by platform (keys: `linux`, `darwin`, `windows`).
 
 ## Example
 
@@ -96,4 +119,3 @@ Options passed to `setup`:
   }
 }
 ```
-
