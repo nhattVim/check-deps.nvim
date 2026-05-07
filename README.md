@@ -28,33 +28,42 @@ return {
         cmd = "make",
         install = {
           linux = { "sudo apt install build-essential", "sudo pacman -S make" },
-          darwin = { "brew install make" },
+          mac = { "brew install make" },
           windows = { "scoop install make", "choco install make" },
         },
       },
       {
-        name = "node",
+        name = "python",
+        cmd = { "python3", "python" },
+        install = {
+          linux = { "sudo apt install python3", "sudo pacman -S python" },
+          mac = { "brew install python" },
+          windows = { "scoop install python", "winget install Python.Python.3" },
+        },
+      },
+      {
+        name = "fd",
+        cmd = { "fd", "fdfind" },
+        install = {
+          linux = { "sudo apt install fd-find", "sudo pacman -S fd" },
+          mac = { "brew install fd" },
+          windows = {
+            "scoop install fd",
+            "choco install fd",
+            "winget install sharkdp.fd",
+          },
+        },
+      },
+      {
+        name = "nodejs",
         cmd = "node",
         check = function()
           return vim.fn.executable("node") == 1 and vim.fn.system("node -v"):match("v16") ~= nil
         end,
         install = {
           linux = { "sudo apt install nodejs" },
-          darwin = { "brew install node" },
+          mac = { "brew install node" },
           windows = { "choco install nodejs" },
-        },
-      },
-      {
-        name = "rg (ripgrep)",
-        cmd = "rg",
-        install = {
-          linux = { "sudo apt install ripgrep", "sudo pacman -S ripgrep" },
-          darwin = { "brew install ripgrep" },
-          windows = {
-            "scoop install ripgrep",
-            "choco install ripgrep",
-            "winget install BurntSushi.ripgrep.GNU",
-          },
         },
       },
       {
@@ -65,12 +74,20 @@ return {
             "sudo add-apt-repository ppa:lazygit-team/release && sudo apt install lazygit",
             "sudo pacman -S lazygit",
           },
-          darwin = { "brew install lazygit" },
+          mac = { "brew install lazygit" },
           windows = {
             "scoop install lazygit",
             "choco install lazygit",
             "winget install JesseDuffield.lazygit",
           },
+        },
+      },
+      {
+        name = "translate-shell",
+        cmd = "trans",
+        install = {
+          linux = { "sudo apt install translate-shell", "sudo pacman -S translate-shell" },
+          mac = { "brew install translate-shell" },
         },
       },
     },
@@ -104,7 +121,7 @@ opts = {
 - **name**: Display name.
 - **cmd**: The executable name to check (optional if using `check`).
 - **check**: A custom Lua function that takes no parameters and returns `true` if installed.
-- **install**: A table of possible install commands by platform (keys: `linux`, `darwin`, `windows`).
+- **install**: A table of possible install commands by platform (keys: `linux`, `mac`, `windows`).
 
 ## Example
 
@@ -114,7 +131,7 @@ opts = {
   cmd = "python3",
   install = {
     linux = { "sudo apt install python3" },
-    darwin = { "brew install python3" },
+    mac = { "brew install python3" },
     windows = { "choco install python3" },
   }
 }

@@ -131,13 +131,19 @@ local function check_dep(dep)
         end
     end
 
-    local executable = dep.cmd or dep.name
+    local executables = dep.cmd or dep.name
 
-    if not executable or not is_executable(executable) then
-        return "missing"
+    if type(executables) == "string" then
+        executables = { executables }
     end
 
-    return "installed"
+    for _, executable in ipairs(executables) do
+        if is_executable(executable) then
+            return "installed", executable
+        end
+    end
+
+    return "missing"
 end
 
 ---@param buf integer
@@ -225,7 +231,7 @@ local function render_left_panel()
 
         local text = ("  %s %s %s"):format(toggle_icon, status_icon, dep.name)
         if result.msg then
-            text = ("%s (%s)"):format(text, result.msg)
+            text = ("%s › %s"):format(text, result.msg)
         end
 
         local line = #lines
